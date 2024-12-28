@@ -1,0 +1,95 @@
+#include "get_next_line.h"
+
+int	get_line_check(char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (0);
+		i++;
+	}
+	return (i);
+}
+
+int	ft_strlen(char *s)
+{
+	int i;
+
+	i = 0;
+	while(s[i])
+		i++;
+	return (i);
+}
+
+static char	*get_joined_new(char *str, char *keep, int lenk, char *new)
+{
+	int	lens;
+	int j;
+	int i;
+
+	lens = ft_strlen(str);
+	i = 0;
+	j = 0;
+	new = malloc(lenk + lens + 1);
+	new[lenk + lens] = '\0';
+	if (!new)
+		return (NULL);
+	while (new[i] && (i < lens))
+	{
+		new[i] = str[i];
+		i++;
+	}
+	while (new[i + j+2] && (i + j < lens + lenk))
+	{
+		new[i + j] = keep[j];
+		j++;
+	}
+	printf("iii%d",(lens+lenk));
+	return (new);
+}
+
+char	*get_next_line(int fd)
+{
+	static char			*str;
+	static char		*keep;
+	char *new;
+	int				len;
+
+	len = 0;
+	str = malloc (BUF + 1);
+	str[BUF] = '\0';
+	if (!str)
+		return (NULL);
+	len = read(fd, str, BUF);
+	if (len <= 0)
+		return (NULL);
+	if ((get_line_check(str)) == 0)
+		return (str);
+	else
+	{
+		keep = malloc (BUF + 1);
+		if (!keep)
+			return (NULL);
+		keep[BUF] = '\0';
+		len = read(fd, keep, BUF + 1);
+		if (len <= 0)
+			return (NULL);
+		new = get_joined_new(str, keep, len,new);
+		return (new);
+	}
+}
+int	main()
+{
+	int fd;
+	char *str;
+	
+	fd = open ("zayed.txt", O_RDWR, 0666);
+	if (fd <= 0)
+		return (0);
+	str = get_next_line(fd);
+	printf("%s", str);
+	return 0;
+}
