@@ -1,0 +1,87 @@
+#include "get_next_line.h"
+
+int	chicking(char *ho)
+{
+	if(!ho)
+		return 1;
+	int	i;
+
+	i = 0;
+	while (ho[i] != '\0')
+	{
+		if (ho[i] == '\n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+int	ft_strlen(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);
+}
+
+char *ft_join(char *ho, char *llo)
+{
+	int	i;
+	int	len;
+	int	len1;
+	int	j;
+	static char *str;
+
+	i = ft_strlen(ho);
+	j = ft_strlen(llo);
+	str = malloc(i + j + 1);
+	i = 0;
+	j = 0;
+	while (str[i] && ho[i])
+	{
+		str[i] = ho[i];
+		i++;
+	}
+	while (str[i+j] && llo[j])
+	{
+		str[i+j] = llo[j];
+		i++;
+	}
+	str[i+j] = '\0';
+		printf("%s",str);
+		free(ho);
+	return (str);
+}
+
+char	*get_next_line(int	fd)
+{
+	static char	*ho;
+	static char	*llo;
+	char *fin;
+	int			x;
+
+	ho = malloc(BUF + 1);
+	if (!ho)
+		return (NULL);
+		ho[x] = '\0';
+	x = read (fd, ho, BUF);
+	if (x <= 0)
+		return (NULL);
+	while (chicking(ho) != 0)
+	{
+		llo = malloc (BUF + 1);
+		if(!llo)
+			return (NULL);
+		x = read(fd, llo, BUF);
+		llo = '\0';
+		if (x == 0)
+			return (ho);
+		fin = ft_join(ho,llo);
+		if (!fin)
+			return NULL;
+		ho = fin;
+		write (1,"76",2);
+	}
+	return (fin);
+}
