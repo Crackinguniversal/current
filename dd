@@ -1,0 +1,137 @@
+#include "get_next_line.h"
+
+int	get_test(char	*str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	ft_strlen(char	*str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+char	*get_join_extra(char *str1, char *str2, int len1, int len2)
+{
+	int		i;
+	int		j;
+	char	*str;
+
+	i = 0;
+	j = 0;
+	str = malloc(len1 + len2 + 1);
+	if (!str)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (len1 > i)
+	{
+		str[i] = str1[i];
+		i++;
+	}
+	while (len2 > j)
+	{
+		str[i] = str[j];
+		j++;
+	}
+	str[len1 + len2] = '\0';
+	return (str);
+}
+
+char	*get_join(char *str1, char *str2)
+{
+	int		len1;
+	int		len2;
+	int		i;
+	int		j;
+	char	*str;
+
+	if (!str2)
+		return (str1);
+	i = 0;
+	j = 0;
+	len1 = ft_strlen(str1);
+	len2 = ft_strlen(str2);
+	str = get_join_extra(str1, str2, len1, len2);
+	free(str1);
+	str1 = NULL;
+	return (str);
+}
+
+int	get_strings_ready(char *keep, char *ret)
+{
+	if (!keep)
+	{
+		keep = malloc(BUFFER_SIZE + 1);
+		if (!keep)
+			return (1);
+		keep[BUFFER_SIZE] = '\0';
+		printf("1");
+		ret = malloc(BUFFER_SIZE + 1);
+		if (!ret)
+			return (1);
+		ret[BUFFER_SIZE] = '\0';
+	}
+	else
+	{
+		ret = malloc(BUFFER_SIZE + 1);
+		if (!ret)
+			return (1);
+		ret[BUFFER_SIZE] = '\0';
+		ret = get_join(keep, ret);
+		if (!ret)
+			return(1);
+		printf("2");
+	}
+	return (0);
+}
+
+char	*get_ret(char *ret, char *keep, int fd)
+{
+	int	flag;
+	int	len;
+
+	flag = 1;
+	if (ret)
+		flag = get_test(ret);
+	while (flag == 1)
+	{
+		len = read(fd, keep, BUFFER_SIZE);
+		if (len <= 0)
+			return (ret);
+		ret = get_join(ret, keep);
+		flag = get_test(ret);
+	}
+	return (ret);
+}
+
+char	*get_next_line(int fd)
+{
+	static char	*keep;
+	char		*ret;
+	int			flag;
+
+	keep = NULL;
+	flag = 1;
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	flag = get_strings_ready(keep, ret);
+	if (flag != 0)
+		return (NULL);
+	ret = get_ret(ret, keep,fd);
+	// ret = get_keep();
+	return (keep);
+}
