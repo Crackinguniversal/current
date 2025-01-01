@@ -1,0 +1,226 @@
+
+#include "get_next_line.h"
+
+int	get_check(char	*str)
+{
+	int i;
+
+	i = 0;
+	while (str[i])
+	{
+		if (str[i] == '\n')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+char	*get_calloc(int size)
+{
+	int		i;
+	char	*ret;
+
+	i = 0;
+	ret = malloc(size + 1);
+	while (i < size + 1)
+	{
+		ret[i] = '\0';
+		i++;
+	}
+	return (ret);
+}
+
+int	ft_strlen(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+		i++;
+	return (i);
+}
+
+char	*get_join_extra(char *s1, char *s2, int sl1, int sl2)
+{
+	int		i;
+	int		j;
+	char	*ret;
+
+	i = 0;
+	j = 0;
+	ret = get_calloc(sl1 + sl2);
+	if (!ret)
+		return (NULL);
+	while (sl1 > i)
+	{
+		ret[i] = s1[i];
+		i++;
+	}
+	while (sl2 > j)
+	{
+		ret[i + j] = s2[j];
+		j++;
+	}
+	return (ret);
+}
+
+char	*get_join(char	*s1, char *s2)
+{
+	int		sl1;
+	int		sl2;
+	char	*ret;
+
+	sl1 = 0;
+	sl2 = 0;
+	sl1 = ft_strlen(s1);
+	sl2 = ft_strlen(s2);
+	ret = get_join_extra(s1, s2, sl1, sl2);
+	return (ret);
+}
+
+int	get_check_ready(char **ret, char	**keep,int fd)
+{
+	if (!*keep)
+	{
+		*keep = get_calloc(BUFFER_SIZE);
+		if (!*keep)
+			return (0);
+		*ret = get_calloc(BUFFER_SIZE);
+		if (!*ret)
+		{
+			free(*keep);
+			return (0);
+		}
+		return (1);
+	}
+	*ret = get_join(*keep, NULL);
+	if (!*ret)
+		return (0);
+	free(*keep);
+	*keep = get_calloc(BUFFER_SIZE);
+	if (!*keep)
+	{
+		free(*ret);
+		return (0);
+	}
+	return (1);
+}
+
+void	get_line(char **ret, char **keep, int fd)
+{
+	int		bytes;
+	int		flag;
+	char	*freee;
+
+	bytes = 1;
+	flag = 0;
+	flag = get_check(*ret);
+	while (bytes > 0 && flag == 0)
+	{
+		freee = *ret;
+		*ret = get_join(*ret, *keep);
+		if (!*ret)
+		{
+			*ret = freee;
+			return ;
+		}
+		free(freee);
+		flag = get_check(*ret);
+		if (flag == 1)
+			return ;
+		bytes = read(fd, *keep, BUFFER_SIZE);
+	}
+	return ;
+}
+
+char	*ft_strchr(char	*str, char c)
+{
+	int		i;
+	int		j;
+	char	*ret;
+
+	i = 0;
+	j = 0;
+	while (str[i] && str[i] != '\n')
+		i++;
+	ret = get_calloc(i);
+	if (!ret)
+		return (NULL);
+	while (j <= i)
+	{
+		ret[j] = str[j];
+		j++;
+	}
+	return (ret);
+}
+
+char	*get_save(char *keep)
+{
+	int		i;
+	int		j;
+	char	*final;
+
+	j = 0;
+	i = 0;
+	final = get_calloc(BUFFER_SIZE);
+	if (!final)
+		return (NULL);
+	while (keep[i])
+	{
+		if (keep[i] == '\n')
+			break ;
+		i++;
+	}
+	i++;
+	while (keep[i])
+	{
+		final[j] = keep[i];
+		j++;
+		i++;
+	}
+	return (final);
+}
+
+void	get_cutadd(char **ret, char **keep)
+{
+	char	*freee;
+
+	freee = *ret;
+	*ret = ft_strchr(*ret, '\n');
+	if (!ret)
+		return ;
+	free(freee);
+	freee = *keep;
+	*keep = get_save(*keep);
+	if (!keep)
+		return ;
+	free(freee);
+}
+
+char	*get_next_line(int	fd)
+{
+	char		*ret;
+	static char	*keep;
+
+	if (fd < 0 || (read(fd, 0, 0) < 0) || BUFFER_SIZE < 0
+		|| (get_check_ready(&ret, &keep, fd)) == 0)
+		return (NULL);
+	if ((read(fd, keep, BUFFER_SIZE) <= 0))
+		return (NULL);
+	get_line(&ret, &keep, fd);
+	get_cutadd(&ret, &keep);
+	return (keep);
+}
+
+
+int	main()
+{
+	char 	*str;
+	int fd;
+	fd = open("zayed.txt",O_RDWR,0666);
+	str = get_next_line(fd);
+	printf("%s", str);
+	return (0);
+}
