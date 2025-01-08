@@ -1,3 +1,4 @@
+
 void	get_keep(char	**newkeep, char **oldkeep)
 {
 	int		i;
@@ -24,4 +25,27 @@ void	get_keep(char	**newkeep, char **oldkeep)
 		}
 		*newkeep[j] = '\0';
 	}
+}
+
+int	main()
+{
+	char 	*ret;
+	char	*keep;
+
+	ret = get_calloc(BUFFER_SIZE + 1);
+	keep = get_calloc(BUFFER_SIZE + 1);
+	keep[0] = 'i';
+		keep[1] = 'i';
+			keep[2] = 'i';
+				keep[3] = '\n';
+					keep[4] = 'i';
+	int fd;
+	int i;
+	fd = open("f.txt", O_RDWR, 0666);
+	// while ((str = get_next_line(fd)) != NULL)
+	// {
+		get_keep(&ret, &keep);
+		printf("%s", keep);
+		// free(ret);
+	return (0);
 }
