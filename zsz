@@ -1,0 +1,27 @@
+void	get_keep(char	**newkeep, char **oldkeep)
+{
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	write(1, "1",2);
+	while (*oldkeep[i] != '\n' && *oldkeep[i])
+		i++;
+	if (*oldkeep[i] == '\n')
+	{
+		i++;
+		if (*oldkeep[i] == '\0')
+		{
+			freeing(*newkeep);
+			return ;
+		}
+		while (*oldkeep[i] != '\0')
+		{
+			*newkeep[j] = *oldkeep[i];
+			j++;
+			i++;
+		}
+		*newkeep[j] = '\0';
+	}
+}
