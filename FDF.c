@@ -6,6 +6,7 @@
 2. now u have the total y find the total x throug reading until null terminator every " " should hundeled
 3. after that start to send them to the function that will print them
 4, y have now the value of x y and z calculate the space and print them
+ -framework OpenGL -framework AppKit -o  flags for compliation with those -Wall -Wextra -Werror -I for MACOS
 */
 
 /*
