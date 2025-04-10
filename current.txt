@@ -1,3 +1,0 @@
--- parcing of philospher has done
--- intilization of all threads and mutexes has done
-** working on logic
